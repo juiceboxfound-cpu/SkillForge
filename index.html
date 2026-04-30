@@ -1,31 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>SkillForge - Dev Training Hub</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SkillForge</title>
+
+<style>
+:root {
+  --bg:#070707;
+  --soft:#0e0e0e;
+  --text:#e8e8e8;
+  --muted:#8f8f8f;
+  --accent:#7a0f1b;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:system-ui;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* HEADER */
+header{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:radial-gradient(circle,#111,#050505);
+}
+
+.hero{
+  max-width:800px;
+  padding:2rem;
+}
+
+.hero h1{
+  font-size:clamp(2.5rem,6vw,4rem);
+}
+
+.hero span{color:var(--accent)}
+
+.hero p{
+  margin-top:1rem;
+  color:var(--muted);
+}
+
+/* SECTION */
+section{
+  max-width:1200px;
+  margin:auto;
+  padding:4rem 2rem;
+}
+
+/* CENTER TITLE */
+h2{
+  text-align:center;
+  margin-bottom:2rem;
+  font-size:2rem;
+  letter-spacing:1px;
+  color:#ddd;
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1rem;
+}
+
+.card{
+  background:#111;
+  border:1px solid #222;
+  padding:1rem;
+  text-align:center;
+  border-radius:12px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+  border-color:var(--accent);
+}
+
+/* PANEL */
+.panel{
+  position:fixed;
+  top:5%;
+  left:10%;
+  width:80%;
+  height:85%;
+  background:#0d0d0d;
+  border:1px solid #222;
+  border-radius:12px;
+  padding:2rem;
+  overflow-y:auto;
+}
+
+.hidden{display:none}
+
+.close{
+  float:right;
+  background:var(--accent);
+  border:none;
+  color:white;
+  padding:5px 10px;
+  cursor:pointer;
+}
+
+/* RESOURCES */
+.resources{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:1rem;
+  margin-top:1rem;
+}
+
+.resource{
+  padding:1rem;
+  border-radius:12px;
+  text-decoration:none;
+  color:white;
+  background:#111;
+  border:1px solid #222;
+  transition:.25s;
+}
+
+.resource:hover{
+  transform:translateY(-4px);
+  border-color:var(--accent);
+}
+
+/* LEARNING BLOCKS */
+.block{
+  margin-top:1rem;
+  padding:1rem;
+  background:#111;
+  border-left:3px solid var(--accent);
+  border-radius:8px;
+}
+
+.level{
+  display:inline-block;
+  padding:2px 8px;
+  font-size:0.8rem;
+  background:#222;
+  border-radius:6px;
+  margin-bottom:5px;
+  color:#aaa;
+}
+
+footer{
+  text-align:center;
+  padding:3rem;
+  color:#666;
+}
+</style>
 </head>
+
 <body>
 
 <header>
-  <h1>SkillForge</h1>
-  <p>Learn. Build. Get challenged. Level up.</p>
+  <div class="hero">
+    <h1>Skill<span>Forge</span></h1>
+    <p>
+      Build real programming skill — not copy-paste tutorials.<br>
+      Think. Break things. Solve problems.
+    </p>
+  </div>
 </header>
 
-<div class="container">
-
-  <input id="search" type="text" placeholder="Search language...">
-
-  <div id="languageGrid" class="grid"></div>
-
-  <div id="panel" class="panel hidden">
-    <button onclick="closePanel()">X</button>
-    <h2 id="langTitle"></h2>
-    <div id="content"></div>
+<section>
+  <h2>About SkillForge</h2>
+  <div style="max-width:700px;margin:0 auto;line-height:1.8;color:var(--text);">
+    <p>SkillForge is designed to help you <strong>improve your coding and modding skills</strong> without relying on tutorials.</p>
+    <p style="margin-top:1rem;">Instead of following step-by-step guides, you'll learn by:</p>
+    <ul style="margin-top:1rem;margin-left:2rem;">
+      <li><strong>Thinking critically</strong> about problems before looking for answers</li>
+      <li><strong>Building real projects</strong> from memory and problem-solving</li>
+      <li><strong>Breaking and fixing code</strong> to develop true understanding</li>
+      <li><strong>Mastering fundamentals</strong> that apply across all languages and modding platforms</li>
+    </ul>
+    <p style="margin-top:1rem;color:var(--muted);">Choose a language or modding platform below and start your journey from beginner to advanced.</p>
   </div>
+</section>
 
+<section>
+  <h2>Languages & Modding</h2>
+  <div class="grid" id="grid"></div>
+</section>
+
+<div id="panel" class="panel hidden">
+  <button class="close" onclick="closePanel()">X</button>
+  <h2 id="title"></h2>
+  <div id="content"></div>
 </div>
 
-<script src="script.js"></script>
+<footer>SkillForge © 2026</footer>
+
+<script>
+const languages = [
+"C","C++","C#","Java","JavaScript","TypeScript","Python","Lua","Rust","Go",
+"Ruby","PHP","Swift","Kotlin","Dart","Haskell","Scala","R","SQL","Bash",
+"PowerShell","HTML","CSS","Assembly","MATLAB","Perl","Julia","VB","Zig","Doom Modding"
+];
+
+const grid = document.getElementById("grid");
+
+languages.forEach(lang=>{
+  const div=document.createElement("div");
+  div.className="card";
+  div.innerText=lang;
+  div.onclick=()=>openLang(lang);
+  grid.appendChild(div);
+});
+
+function openLang(lang){
+  document.getElementById("panel").classList.remove("hidden");
+  document.getElementById("title").innerText = lang;
+
+  document.getElementById("content").innerHTML = `
+    <h3>${lang} Mastery Path</h3>
+
+    <div class="block">
+      <div class="level">BEGINNER</div>
+      Learn the syntax by building something WITHOUT tutorials:
+      <ul>
+        <li>Write a program from memory</li>
+        <li>Explain how variables + loops work out loud</li>
+        <li>Break code and fix it</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <div class="level">INTERMEDIATE</div>
+      Focus on thinking, not copying:
+      <ul>
+        <li>Build a mini tool (calculator / tracker / system)</li>
+        <li>Recreate something simple from memory</li>
+        <li>Modify broken code without looking it up</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <div class="level">ADVANCED</div>
+      Real skill building:
+      <ul>
+        <li>Create a full project (game, mod system, or API)</li>
+        <li>Optimize your code</li>
+        <li>Teach the concept back in your own words</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <div class="level">THINKING CHALLENGES</div>
+      <ul>
+        <li>Build something with NO tutorials at all</li>
+        <li>Recreate a known system from scratch</li>
+        <li>Debug intentionally broken code</li>
+      </ul>
+    </div>
+
+    <h4>Resources (use AFTER trying first)</h4>
+    <div class="resources">
+
+      <a class="resource" target="_blank"
+      href="https://www.youtube.com/results?search_query=${lang}+tutorial">
+      ▶ Reference Videos
+      </a>
+
+      <a class="resource" target="_blank"
+      href="https://github.com/search?q=${lang}">
+      🧠 Code Examples
+      </a>
+
+      <a class="resource" target="_blank"
+      href="https://leetcode.com">
+      ⚔ Problem Solving
+      </a>
+
+    </div>
+  `;
+}
+
+function closePanel(){
+  document.getElementById("panel").classList.add("hidden");
+}
+</script>
+
 </body>
 </html>
